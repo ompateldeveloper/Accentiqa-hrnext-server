@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv"
 dotenv.config()
 import express from 'express';
-// import router from "./api/routes.js";
+import router from "./api/routes.js";
 // import connectDB from "./connectDB.js";
 import bodyParser from "body-parser";
 
@@ -14,7 +14,7 @@ app.get('/',(req,res)=>{
     res.send('Welcome to The Internet Folks API')
 })
 
-// app.use("/",router)
+app.use("/",router)
 
 
 app.listen(process.env.PORT || 4000,()=>{
