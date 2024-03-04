@@ -16,6 +16,166 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
   name String
-  email String
+  email String @unique
   password String
+}
+// schema.prisma
+
+model Designation {
+  id        Int      @id @default(autoincrement())
+  name      String
+  employees Employee[] @relation("EmployeeDesignation")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Department {
+  id        Int      @id @default(autoincrement())
+  name      String
+  employees Employee[] @relation("EmployeeDepartment")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Division {
+  id        Int      @id @default(autoincrement())
+  name      String
+  employees Employee[] @relation("EmployeeDivision")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReportingManager {
+  id        Int      @id @default(autoincrement())
+  name      String
+  employees Employee[] @relation("EmployeeReportingManager")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  name        String
+  employees   Employee[] @relation("EmployeeProject")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Employee {
+  id                  Int      @id @default(autoincrement())
+  empSeries           String
+  probationPeriod     String
+  empNo               String
+  confirmDate         DateTime?
+  name                String
+  email               String
+  dob                 DateTime?
+  mobileNo            String
+  aadharNo            String
+  emergencyName       String
+  gender              String
+  emergencyNo         String
+  reportingMg         ReportingManager? @relation("EmployeeReportingManager", fields: [reportingMgId], references: [id])
+  reportingMgId       Int?
+  fathersName         String?
+  status              String
+  spouseName          String?
+  doj                 DateTime?
+
+  grade               String
+  costCenter          String
+  designation         Designation? @relation("EmployeeDesignation", fields: [designationId], references: [id])
+  designationId       Int?
+  location            String
+  division            Division?   @relation("EmployeeDivision", fields: [divisionId], references: [id])
+  divisionId          Int?
+  department          Department? @relation("EmployeeDepartment", fields: [departmentId], references: [id])
+  departmentId        Int?
+  shift               String
+  project             Project?    @relation("EmployeeProject", fields: [projectId], references: [id])
+  projectId           Int?
+  projectDate         String?
+  panNo               String
+  passportNo          String
+  projectInfo         EmployeeProjectInfo[]
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model EmployeeStep1 {
+  id                  Int      @id @default(autoincrement())
+  empSeries           String
+  probationPeriod     String
+  empNo               String
+  confirmDate         DateTime?
+  name                String
+  email               String
+  dob                 DateTime?
+  mobileNo            String
+  aadharNo            String
+  emergencyName       String
+  gender              String
+  emergencyNo         String
+  reportingMgId       Int?
+  fathersName         String?
+  status              String
+  spouseName          String?
+  doj                 DateTime?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model EmployeeStep2 {
+  id                  Int      @id @default(autoincrement())
+  grade               String
+  costCenter          String
+  designationId       Int?
+  location            String
+  divisionId          Int?
+  departmentId        Int?
+  shift               String
+  projectId           Int?
+  projectDate         String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model EmployeeStep3 {
+  id                  Int      @id @default(autoincrement())
+  panNo               String
+  aadharNo            String
+  passportNo          String
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+
+// schema.prisma
+
+model EmployeeProjectInfo {
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  dateOfJoining        DateTime
+  salary               Float
+  project              String
+  projectAllocationDate DateTime?
+  allocatedProject     String?
+  isBillable           Boolean
+
+  employee             Employee              @relation(fields: [employeeId], references: [id])
+  employeeId           Int
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([employeeId], name: "idx_employee_project_info_employee_id")
 }
