@@ -13,6 +13,7 @@ export const AuthMiddleware = async (req, res, next) => {
 
     try {
         const {id} = jwt.verify(token, process.env.JWT_SECRET)
+        // const isAdmin = await prisma.whitelist.findUnique
         const user = await prisma.user.findUnique({where:{id:id}})
         if(!user) return res.status(401).send('UNAUTHORIZED_TOKEN')
         req.user = user

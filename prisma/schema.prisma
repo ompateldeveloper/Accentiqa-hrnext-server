@@ -18,7 +18,15 @@ model User {
   name String
   email String @unique
   password String
+  whitelist Whitelist? @relation(fields: [id], references: [userId])
 }
+
+model Whitelist {
+  id     Int      @id @default(autoincrement())
+  userId Int      @unique
+  user   User?
+}
+
 // schema.prisma
 
 model Designation {
@@ -68,7 +76,6 @@ model Project {
 
 model Employee {
   id                  Int      @id @default(autoincrement())
-  empSeries           String
   probationPeriod     String
   empNo               String
   confirmDate         DateTime?
@@ -110,7 +117,6 @@ model Employee {
 
 model EmployeeStep1 {
   id                  Int      @id @default(autoincrement())
-  empSeries           String
   probationPeriod     String
   empNo               String
   confirmDate         DateTime?
