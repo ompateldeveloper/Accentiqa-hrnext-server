@@ -4,16 +4,108 @@ import prisma from "../../../lib/client.js";
 
 
 
-export const empForm1 = async(req,res)=>{
-    
+export const empForm1 = async (req, res) => {
+    const body = req.body;
+    const validation = new Validator(body, {
+        probationPeriod: 'required|string',
+        empNo: 'required|string',
+        confirmDate: 'required|date',
+        name: 'required|string|min:2',
+        email: 'required|email',
+        dob: 'required|date',
+        mobileNo: 'required|string',
+        aadharNo: 'required|string|min:12',
+        emergencyName: 'required|string',
+        gender: 'required|string|in:male,female,other',
+        emergencyNo: 'required|string',
+        reportingMgId: 'required|integer',
+        fathersName: 'string',
+        status: 'required|string',
+        spouseName: 'string',
+        doj: 'required|date',
+    });
+
+    if (validation.fails()) {
+        // return res.status(400).json(validation.errors.all())
+    }
+    // const rmi = parseInt(body.reportingMgId)
+    const rmi = 2
+
+
+
+    const newvalues  = {
+        ...body,
+        reportingMgId:rmi
+    }
+    delete newvalues.empSeries;
+
+    console.log(newvalues);
+    await prisma.employeeStep1.create({
+        data: newvalues,
+    })
+        .then((emp) => {
+            console.log("emp",emp);
+            res.status(201).json(emp)
+        })
+        .catch((error) => {
+            res.status(400).json(error)
+        })
 }
 
+export const empForm2 = async (req, res) => {
+    const body = req.body;
+    const validation = new Validator(body, {
+        grade: 'required|string',
+        costCenter: 'required|string',
+        designationId: 'required|integer',
+        location: 'required|string',
+        divisionId: 'required|integer',
+        departmentId: 'required|integer',
+        shift:'required|string',
+        project: 'string',
+        projectDate: 'date',
+        panNo: 'required|string',
+        passportNo: 'string',
+    });
 
+    if (validation.fails()) {
+        // return res.status(400).json(validation.errors.all())
+    }
 
+    await prisma.employeeStep2.create({
+        data: body,
+    })
+        .then((emp) => {
+            res.status(201).json(emp)
+        })
+        .catch((error) => {
+            res.status(400).json(error)
+        })
+}
+export const empForm3 = async (req, res) => {
+    const body = req.body;
+    const validation = new Validator(body, {
+        panNo: 'required|string',
+        aadharNo: 'required|string|min:12',
+        passportNo: 'string',
+    });
+
+    if (validation.fails()) {
+        return res.status(400).json(validation.errors.all())
+    }
+    await prisma.employeeStep3.create({
+        data: body,
+    })
+        .then((emp) => {
+            res.status(201).json(emp)
+        })
+        .catch((error) => {
+            res.status(400).json(error)
+        })
+}
 export const addEmp = async (req, res) => {
     const body = req.body;
     const validation = new Validator(body, {
-        empSeries: 'required|string',
         probationPeriod: 'required|string',
         empNo: 'required|string',
         confirmDate: 'required|date',
@@ -36,6 +128,7 @@ export const addEmp = async (req, res) => {
         location: 'required|string',
         divisionId: 'required|integer',
         departmentId: 'required|integer',
+        shift:'required|string',
         project: 'string',
         projectDate: 'date',
         panNo: 'required|string',
@@ -60,23 +153,25 @@ export const addEmp = async (req, res) => {
 export const getEmp = async (req, res) => {
 
     await prisma.employee.findMany({})
-    .then((emp) => {
-        res.json(emp)
-    })
-    .catch((error)=>{
-        console.log(error);
-    })
+        .then((emp) => {
+            res.json(emp)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
 }
 export const getEmpOne = async (req, res) => {
-    await prisma.employee.findFirst({where:{
-        empNo:req.param.id
-    }})
-    .then((emp) => {
-        res.json(emp)
+    await prisma.employee.findFirst({
+        where: {
+            empNo: req.param.id
+        }
     })
-    .catch((error)=>{
-        console.log(error);
-    })
+        .then((emp) => {
+            res.json(emp)
+        })
+        .catch((error) => {
+            console.log(error);
+        })
 }
 export const updateEmp = (req, res) => {
 

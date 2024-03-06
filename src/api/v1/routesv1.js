@@ -4,6 +4,6 @@ import { employeeRouter } from "./routers/EmployeeRoutes.js";
 import { AuthMiddleware } from "./middlewares/AuthMiddleware.js";
 
 const routerv1 =  Router();
+routerv1.use('/v1/emp',AuthMiddleware,employeeRouter)
 routerv1.use('/v1',authRouter)
-routerv1.use('/v1',AuthMiddleware,employeeRouter)
 export default routerv1;

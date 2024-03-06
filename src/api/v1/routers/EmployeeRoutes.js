@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { addEmp, deleteEmp, getEmp, getEmpOne, updateEmp } from "../controllers/EmployeeController.js";
+import { addEmp, deleteEmp, empForm1, empForm2, empForm3, getEmp, getEmpOne, updateEmp } from "../controllers/EmployeeController.js";
 
 export const employeeRouter = Router();
 
 
-employeeRouter.post('/addemployee/form1',addEmp)
-employeeRouter.post('/addemployee/form2',addEmp)
-employeeRouter.post('/addemployee/form3',addEmp)
+employeeRouter.post('/addemployee/form1',empForm1)
+employeeRouter.post('/addemployee/form2',empForm2)
+employeeRouter.post('/addemployee/form3',empForm3)
 
 
 employeeRouter.post('/employeeprojectinfo/',addEmp)

@@ -7,11 +7,11 @@ export const signup = async (req, res) => {
     const validation = new Validator(body, {
         name: 'required|min:2',
         email: 'required|email',
-        password: ['required', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]+$/'],
+        password: ['required', 'regex:/^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$/'],
     });
 
     if (validation.fails()) {
-        return res.status(400).json(validation.errors.all())
+        return res.status(405).json(validation.errors.all())
     }
     const exists = await prisma.user.findUnique({
         where: {
@@ -19,7 +19,7 @@ export const signup = async (req, res) => {
         },
     });
     if (exists) {
-        return res.status(400).json({ error: ['ALREADY_EXISTS'] })
+        return res.status(403).json({ error: ['ALREADY_EXISTS'] })
     }
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -35,7 +35,7 @@ export const signup = async (req, res) => {
         res.json({...sanitizedUser,token})
     })
     .catch((error)=>{
-        res.status(400).json(error)
+        res.status(409).json(error)
     })
 
 }
@@ -46,30 +46,37 @@ export const signin = async (req, res) => {
 
         const validation = new Validator(body, {
             email: 'required|email',
-            password: ['required', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]+$/'],
+            password: ['required', 'regex:/^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$/'],
         });
 
         if (validation.fails()) {
-            return res.status(400).json(validation.errors.all())
+            return res.status(405).json(validation.errors.all())
         }
 
         const user = await prisma.user.findUnique({
             where: {
-                email: body.email,
-                password: body.password
+                email: body.email
             },
         })
-        .then((user)=>{
-            const token = generateToken(user)
-            const sanitizedUser = sanitizeUser(user)
-            res.json({...sanitizedUser,token})
+        .then(async(user)=>{
+            if (user && (await bcrypt.compare(body.password, user.password))) {
+                const token = generateToken(user)
+                // const sanitizedUser = sanitizeUser(user)
+                return res.json({
+                    name:user.name,
+                    email:user.email,
+                    token
+                })
+            } else {
+                
+            }
         })
-        .catch(()=>{
-            res.status(400).json(error)
+        .catch((error)=>{
+            return res.status(409).json(error)
         });
 
         if (!user) {
-            return res.status(400).json({ error: ['USER_NOT_EXIST'] })
+            return res.status(402).json({ error: ['USER_NOT_EXIST'] })
         }
 
 }
