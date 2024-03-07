@@ -7,9 +7,9 @@ import cors from "cors";
 
 const app = express();
 
-app.use(cors())
 app.use(bodyParser.json())
 
+app.use(cors())
 
 app.get('/',(req,res)=>{
     res.send('Welcome to Accentiqa API')
@@ -19,6 +19,5 @@ app.use("/",router)
 
 
 app.listen(process.env.PORT || 4000,()=>{
-    // connectDB()
     console.log("server started");
 })
