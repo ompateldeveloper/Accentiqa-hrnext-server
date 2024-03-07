@@ -1,12 +1,29 @@
 import Validator from "validatorjs";
 import prisma from "../../../lib/client.js";
-
+import pkg from 'validator';
+const { toDate} = pkg;
 
 
 
 export const empForm1 = async (req, res) => {
     const body = req.body;
-    const validation = new Validator(body, {
+    const rmi = parseInt(body.reportingMgId)
+    console.log(body.reportingMgId);
+    const exists = await prisma.employeeStep1.findFirst({
+        where:{
+            empNo:body.empNo
+        }
+    })
+    if(exists){
+        return res.status(406).json({error:"EMP_ALREADY_EXISTS"})
+    }
+    const newvalues  = {
+        ...body,
+        reportingMgId:rmi
+    }
+    delete newvalues.empSeries;
+
+    const validation = new Validator(newvalues, {
         probationPeriod: 'required|string',
         empNo: 'required|string',
         confirmDate: 'required|date',
@@ -18,7 +35,7 @@ export const empForm1 = async (req, res) => {
         emergencyName: 'required|string',
         gender: 'required|string|in:male,female,other',
         emergencyNo: 'required|string',
-        reportingMgId: 'required|integer',
+        reportingMgId: 'integer',
         fathersName: 'string',
         status: 'required|string',
         spouseName: 'string',
@@ -26,20 +43,10 @@ export const empForm1 = async (req, res) => {
     });
 
     if (validation.fails()) {
-        // return res.status(400).json(validation.errors.all())
+        return res.status(400).json(validation.errors.all())
     }
-    // const rmi = parseInt(body.reportingMgId)
-    const rmi = 2
 
 
-
-    const newvalues  = {
-        ...body,
-        reportingMgId:rmi
-    }
-    delete newvalues.empSeries;
-
-    console.log(newvalues);
     await prisma.employeeStep1.create({
         data: newvalues,
     })
@@ -53,33 +60,42 @@ export const empForm1 = async (req, res) => {
 }
 
 export const empForm2 = async (req, res) => {
-    const body = req.body;
+    const body = {
+        ...req.body,
+        projectDate:toDate(req.body.projectDate).toISOString(),
+        designationId:parseInt(req.body.designationId),
+        departmentId:parseInt(req.body.departmentId),
+        divisionId:parseInt(req.body.divisionId),
+        projectId:parseInt(req.body.projectId)
+
+    };
+    delete body.empNo;
+    console.log(body);
     const validation = new Validator(body, {
         grade: 'required|string',
         costCenter: 'required|string',
-        designationId: 'required|integer',
+        designationId: 'integer', 
         location: 'required|string',
-        divisionId: 'required|integer',
-        departmentId: 'required|integer',
-        shift:'required|string',
-        project: 'string',
-        projectDate: 'date',
-        panNo: 'required|string',
-        passportNo: 'string',
+        divisionId: 'integer', 
+        departmentId: 'integer', 
+        shift: 'required|string',
+        projectId: 'integer', 
+        projectDate: 'date', 
     });
 
     if (validation.fails()) {
-        // return res.status(400).json(validation.errors.all())
+        return res.status(400).json(validation.errors.all())
     }
 
     await prisma.employeeStep2.create({
         data: body,
     })
         .then((emp) => {
-            res.status(201).json(emp)
+            console.log(emp);
+            return res.status(201).json(emp)
         })
         .catch((error) => {
-            res.status(400).json(error)
+            return res.status(400).json(error)
         })
 }
 export const empForm3 = async (req, res) => {
@@ -91,7 +107,7 @@ export const empForm3 = async (req, res) => {
     });
 
     if (validation.fails()) {
-        return res.status(400).json(validation.errors.all())
+        return res.status(409).json(validation.errors.all())
     }
     await prisma.employeeStep3.create({
         data: body,
