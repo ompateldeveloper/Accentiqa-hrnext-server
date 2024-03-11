@@ -64,6 +64,11 @@ export const addMisc = async (req, res) => {
             .then((data)=>{console.log(data) ; return})
             .catch((error)=>{console.log(error) ; return})
             break;
+        case 'reportingmanager':
+            await prisma.reportingManager.create({data:req.body})
+            .then((data)=>{console.log(data) ; return})
+            .catch((error)=>{console.log(error) ; return})
+            break;
         default:
             break;
     }
