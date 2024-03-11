@@ -77,10 +77,10 @@ model Employee {
 
   probationPeriod     String
   empNo               String
-  confirmDate         DateTime?
+  confirmDate         String?
   name                String
   email               String
-  dob                 DateTime?
+  dob                 String?
   mobileNo            String
   aadharNo            String
   emergencyName       String
@@ -91,7 +91,7 @@ model Employee {
   fathersName         String?
   status              String
   spouseName          String?
-  doj                 DateTime?
+  doj                 String?
   grade               String
   costCenter          String
   designation         Designation? @relation("EmployeeDesignation", fields: [designationId], references: [id])
@@ -141,6 +141,7 @@ model EmployeeStep1 {
 
 model EmployeeStep2 {
   id                  Int      @id @default(autoincrement())
+  empNo               String
 
   grade               String
   costCenter          String
@@ -162,6 +163,7 @@ model EmployeeStep2 {
 
 model EmployeeStep3 {
   id                  Int      @id @default(autoincrement())
+  empNo               String
 
   panNo               String
   aadharNo            String
