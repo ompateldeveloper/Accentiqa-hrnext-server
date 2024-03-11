@@ -9,11 +9,7 @@ export const empForm1 = async (req, res) => {
     const body = req.body;
     const rmi = parseInt(body.reportingMgId)
     console.log(body.reportingMgId);
-    const exists = await prisma.employeeStep1.findFirst({
-        where:{
-            empNo:body.empNo
-        }
-    })
+    const exists = await prisma.employeeStep3.findFirst({where:{empNo:body.empNo}})
     if(exists){
         return res.status(406).json({error:"EMP_ALREADY_EXISTS"})
     }
@@ -22,6 +18,8 @@ export const empForm1 = async (req, res) => {
         reportingMgId:rmi
     }
     delete newvalues.empSeries;
+
+
 
     const validation = new Validator(newvalues, {
         probationPeriod: 'required|string',
@@ -47,6 +45,7 @@ export const empForm1 = async (req, res) => {
     }
 
 
+
     await prisma.employeeStep1.create({
         data: newvalues,
     })
@@ -69,10 +68,16 @@ export const empForm2 = async (req, res) => {
         projectId:parseInt(req.body.projectId)
 
     };
-    delete body.empNo;
-    console.log(body);
+
+    const exists = await prisma.employeeStep2.findFirst({where:{empNo:body.empNo}})
+
+    if (exists) {
+        return res.status(402).json({message:"Already_exist"})
+    }
+
     const validation = new Validator(body, {
         grade: 'required|string',
+        empNo:'required|string',
         costCenter: 'required|string',
         designationId: 'integer', 
         location: 'required|string',
@@ -87,11 +92,19 @@ export const empForm2 = async (req, res) => {
         return res.status(400).json(validation.errors.all())
     }
 
+    const empValidate = await prisma.employeeStep1.findFirst({where:{empNo:body.empNo}})
+    if (!empValidate) {
+        return res.status(402).json({message:"complete step 1"})
+    }
+
+
+
+
     await prisma.employeeStep2.create({
         data: body,
     })
         .then((emp) => {
-            console.log(emp);
+            console.log("step-2",emp);
             return res.status(201).json(emp)
         })
         .catch((error) => {
@@ -101,14 +114,36 @@ export const empForm2 = async (req, res) => {
 export const empForm3 = async (req, res) => {
     const body = req.body;
     const validation = new Validator(body, {
+        empNo:'required|string',
         panNo: 'required|string',
         aadharNo: 'required|string|min:12',
         passportNo: 'string',
     });
 
+
+    const exists = await prisma.employeeStep3.findFirst({where:{empNo:body.empNo}})
+
+    if (exists) {
+        return res.status(402).json({message:"Already_exist"})
+    }
+
     if (validation.fails()) {
         return res.status(409).json(validation.errors.all())
     }
+    
+    const empValidate1 = await prisma.employeeStep1.findFirst({where:{empNo:body.empNo}})
+
+    if (!empValidate1) {
+        return res.status(402).json({message:"complete step 1"})
+    }
+    const empValidate2 = await prisma.employeeStep2.findFirst({where:{empNo:body.empNo}})
+
+    if (!empValidate2) {
+        return res.status(402).json({message:"complete step 2"})
+    }
+ 
+
+
     await prisma.employeeStep3.create({
         data: body,
     })
@@ -119,50 +154,37 @@ export const empForm3 = async (req, res) => {
             res.status(400).json(error)
         })
 }
-export const addEmp = async (req, res) => {
+export const lastStep = async (req, res) => {
     const body = req.body;
-    const validation = new Validator(body, {
-        probationPeriod: 'required|string',
-        empNo: 'required|string',
-        confirmDate: 'required|date',
-        name: 'required|string|min:2',
-        email: 'required|email',
-        dob: 'required|date',
-        mobileNo: 'required|string',
-        aadharNo: 'required|string|min:16',
-        emergencyName: 'required|string',
-        gender: 'required|string|in:male,female,other',
-        emergencyNo: 'required|string',
-        reportingMgId: 'required|integer',
-        fathersName: 'string',
-        status: 'required|string',
-        spouseName: 'string',
-        doj: 'required|date',
-        grade: 'required|string',
-        costCenter: 'required|string',
-        designationId: 'required|integer',
-        location: 'required|string',
-        divisionId: 'required|integer',
-        departmentId: 'required|integer',
-        shift:'required|string',
-        project: 'string',
-        projectDate: 'date',
-        panNo: 'required|string',
-        passportNo: 'string',
-    });
+    const empStep1 = await prisma.employeeStep1.findFirst({where:{empNo:body.empNo}})
+    const empStep2 = await prisma.employeeStep2.findFirst({where:{empNo:body.empNo}})
+    const empStep3 = await prisma.employeeStep3.findFirst({where:{empNo:body.empNo}})
 
-    if (validation.fails()) {
-        return res.status(400).json(validation.errors.all())
+    delete empStep1.id;
+    delete empStep1.createdAt;
+    delete empStep1.updatedAt;
+    delete empStep2.id;
+    delete empStep2.createdAt;
+    delete empStep2.updatedAt;
+    delete empStep3.id;
+    delete empStep3.createdAt;
+    delete empStep3.updatedAt;
+
+    const payload = {
+        ...empStep1,
+        ...empStep2,
+        ...empStep3,
     }
-
+    console.log(payload);
+    
     await prisma.employee.create({
-        data: body,
+        data: payload,
     })
         .then((emp) => {
-            res.status(201).json(emp)
+            return res.status(201).json(emp)
         })
         .catch((error) => {
-            res.status(400).json(error)
+            return res.status(400).json(error)
         })
 }
 
@@ -193,5 +215,11 @@ export const updateEmp = (req, res) => {
 
 }
 export const deleteEmp = (req, res) => {
+
+}
+
+
+
+export const addEmpProj = (req,res) => {
 
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addEmp, deleteEmp, empForm1, empForm2, empForm3, getEmp, getEmpOne, updateEmp } from "../controllers/EmployeeController.js";
+import { addEmpProj, deleteEmp, empForm1, empForm2, empForm3, getEmp, getEmpOne, lastStep, updateEmp } from "../controllers/EmployeeController.js";
 
 export const employeeRouter = Router();
 
@@ -7,11 +7,11 @@ export const employeeRouter = Router();
 employeeRouter.post('/addemployee/form1',empForm1)
 employeeRouter.post('/addemployee/form2',empForm2)
 employeeRouter.post('/addemployee/form3',empForm3)
+employeeRouter.post('/addemployee/laststep',lastStep)
 
 
-employeeRouter.post('/employeeprojectinfo/',addEmp)
+employeeRouter.post('/employeeprojectinfo/',addEmpProj)
 
-employeeRouter.post('/employee/add',addEmp)
 employeeRouter.get('/employee/one/:id',getEmpOne);
 employeeRouter.get('/employee/all',getEmp);
 employeeRouter.put('/employee/update/:id',updateEmp)
