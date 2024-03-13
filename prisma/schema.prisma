@@ -178,10 +178,9 @@ model EmployeeProjectInfo {
   id                   Int      @id @default(autoincrement())
 
   name                 String
-  dateOfJoining        DateTime
+  doj                  String
   salary               Float
-  project              String
-  projectAllocationDate DateTime?
+  projectDate          String?
   allocatedProject     String?
   isBillable           Boolean
 

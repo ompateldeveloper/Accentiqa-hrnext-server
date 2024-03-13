@@ -41,6 +41,7 @@ export const empForm1 = async (req, res) => {
     });
 
     if (validation.fails()) {
+        console.log(validation.errors.all());
         return res.status(400).json(validation.errors.all())
     }
 
