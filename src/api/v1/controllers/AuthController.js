@@ -9,6 +9,7 @@ export const signup = async (req, res) => {
         email: 'required|email',
         password: ['required', 'regex:/^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$/'],
     });
+    
 
     if (validation.fails()) {
         return res.status(405).json(validation.errors.all())
