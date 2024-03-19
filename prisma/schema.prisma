@@ -71,6 +71,7 @@ model ReportingManager {
   updatedAt DateTime @updatedAt
 }
 
+
 model Project {
   id          Int      @id @default(autoincrement())
   name        String

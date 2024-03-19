@@ -33,6 +33,11 @@ export const getMisc = async (req, res) => {
             .then((data)=>{return res.status(200).json(data)})
             .catch((error)=>{return res.status(400).json(error)})
             break;
+        case 'locations':
+            await prisma.location.findMany({})
+            .then((data)=>{return res.status(200).json(data)})
+            .catch((error)=>{return res.status(400).json(error)})
+            break;
         default:
             break;
     }    
@@ -63,6 +68,11 @@ export const addMisc = async (req, res) => {
             break;
         case 'reportingmanager':
             await prisma.reportingManager.create({data:req.body})
+            .then((data)=>{return res.status(201).json(data)})
+            .catch((error)=>{return res.status(400).json(error)})
+            break;
+        case 'locations':
+            await prisma.location.create({data:req.body})
             .then((data)=>{return res.status(201).json(data)})
             .catch((error)=>{return res.status(400).json(error)})
             break;
@@ -101,6 +111,11 @@ export const updateMisc = async (req, res) => {
             .then((data)=>{return res.status(200).json(data)})
             .catch((error)=>{return res.status(400).json(error)})
             break;
+        case 'locations':
+            await prisma.location.update({where:{id},data:{name:req.body.name}})
+            .then((data)=>{return res.status(200).json(data)})
+            .catch((error)=>{return res.status(400).json(error)})
+            break;
         default:
             break;
     }    
@@ -132,6 +147,11 @@ export const deleteMisc = async (req, res) => {
             break;
         case 'reportingmanager':
             await prisma.reportingManager.delete({where:{id}})
+            .then((data)=>{return res.status(200).json(data)})
+            .catch((error)=>{return res.status(400).json(error)})
+            break;
+        case 'locations':
+            await prisma.location.delete({where:{id}})
             .then((data)=>{return res.status(200).json(data)})
             .catch((error)=>{return res.status(400).json(error)})
             break;
