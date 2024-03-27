@@ -35,7 +35,6 @@ model Designation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 model Location {
   id        Int      @id @default(autoincrement())
   name      String
@@ -61,7 +60,6 @@ model Division {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 model ReportingManager {
   id        Int      @id @default(autoincrement())
   name      String
@@ -70,8 +68,6 @@ model ReportingManager {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-
 model Project {
   id          Int      @id @default(autoincrement())
   name        String
@@ -88,7 +84,7 @@ model Employee {
   empNo               String
   confirmDate         String?
   name                String
-  email               String
+  email               String 
   dob                 String?
   mobileNo            String
   aadharNo            String
@@ -116,11 +112,13 @@ model Employee {
   projectId           Int?
   projectDate         String?
   panNo               String
-  passportNo          String
-  projectInfo         EmployeeProjectInfo[]
+  passportNo          String?
+  salary              Float?
+  isBillable          Boolean?    @default(false)
+  paymentType         String
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
 }
 
 model EmployeeStep1 {
@@ -184,21 +182,4 @@ model EmployeeStep3 {
 }
 
 
-model EmployeeProjectInfo {
-  id                   Int      @id @default(autoincrement())
 
-  name                 String
-  doj                  String
-  salary               Float
-  projectDate          String?
-  allocatedProject     String?
-  isBillable           Boolean
-
-  employee             Employee              @relation(fields: [employeeId], references: [id])
-  employeeId           Int
-
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  @@index([employeeId], name: "idx_employee_project_info_employee_id")
-}

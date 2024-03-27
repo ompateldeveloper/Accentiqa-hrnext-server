@@ -63,7 +63,7 @@ export const empForm2 = async (req, res) => {
     const body = {
         ...req.body,
         projectDate:toDate(req.body.projectDate).toISOString(),
-        locationId:parseInt(req.body.designationId),
+        locationId:parseInt(req.body.locationId),
         designationId:parseInt(req.body.designationId),
         departmentId:parseInt(req.body.departmentId),
         divisionId:parseInt(req.body.divisionId),
