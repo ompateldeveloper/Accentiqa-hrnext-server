@@ -5,17 +5,15 @@ const { toDate} = pkg;
 
 
 
-export const empForm1 = async (req, res) => {
+export const empBasicInfo = async (req, res) => {
     const body = req.body;
-    const rmi = parseInt(body.reportingMgId)
-    console.log(body.reportingMgId);
-    const exists = await prisma.employeeStep3.findFirst({where:{empNo:body.empNo}})
+    const exists = await prisma.empBasicInfo.findFirst({where:{empNo:body.empNo}})
     if(exists){
         return res.status(406).json({error:"EMP_ALREADY_EXISTS"})
     }
     const newvalues  = {
         ...body,
-        reportingMgId:rmi
+        reportingMgId:parseInt(body.reportingMgId)
     }
     delete newvalues.empSeries;
 
@@ -47,11 +45,11 @@ export const empForm1 = async (req, res) => {
 
 
 
-    await prisma.employeeStep1.create({
+    await prisma.empBasicInfo.create({
         data: newvalues,
     })
         .then((emp) => {
-            console.log("emp",emp);
+            console.log("emp basic info added");
             res.status(201).json(emp)
         })
         .catch((error) => {
@@ -59,7 +57,7 @@ export const empForm1 = async (req, res) => {
         })
 }
 
-export const empForm2 = async (req, res) => {
+export const empPosition = async (req, res) => {
     const body = {
         ...req.body,
         projectDate:toDate(req.body.projectDate).toISOString(),
@@ -71,7 +69,7 @@ export const empForm2 = async (req, res) => {
 
     };
 
-    const exists = await prisma.employeeStep2.findFirst({where:{empNo:body.empNo}})
+    const exists = await prisma.employeePosition.findFirst({where:{empNo:body.empNo}})
 
     if (exists) {
         return res.status(402).json({message:"Already_exist"})
@@ -94,7 +92,7 @@ export const empForm2 = async (req, res) => {
         return res.status(400).json(validation.errors.all())
     }
 
-    const empValidate = await prisma.employeeStep1.findFirst({where:{empNo:body.empNo}})
+    const empValidate = await prisma.employeeBasicInfo.findFirst({where:{empNo:body.empNo}})
     if (!empValidate) {
         return res.status(402).json({message:"complete step 1"})
     }
@@ -102,7 +100,7 @@ export const empForm2 = async (req, res) => {
 
 
 
-    await prisma.employeeStep2.create({
+    await prisma.employeePosition.create({
         data: body,
     })
         .then((emp) => {
@@ -113,7 +111,7 @@ export const empForm2 = async (req, res) => {
             return res.status(400).json(error)
         })
 }
-export const empForm3 = async (req, res) => {
+export const empStatutory = async (req, res) => {
     const body = req.body;
     const validation = new Validator(body, {
         empNo:'required|string',
@@ -123,7 +121,7 @@ export const empForm3 = async (req, res) => {
     });
 
 
-    const exists = await prisma.employeeStep3.findFirst({where:{empNo:body.empNo}})
+    const exists = await prisma.employeeStatutory.findFirst({where:{empNo:body.empNo}})
 
     if (exists) {
         return res.status(402).json({message:"Already_exist"})
@@ -133,12 +131,12 @@ export const empForm3 = async (req, res) => {
         return res.status(409).json(validation.errors.all())
     }
     
-    const empValidate1 = await prisma.employeeStep1.findFirst({where:{empNo:body.empNo}})
+    const empValidate1 = await prisma.empBasicInfo.findFirst({where:{empNo:body.empNo}})
 
     if (!empValidate1) {
         return res.status(402).json({message:"complete step 1"})
     }
-    const empValidate2 = await prisma.employeeStep2.findFirst({where:{empNo:body.empNo}})
+    const empValidate2 = await prisma.employeePosition.findFirst({where:{empNo:body.empNo}})
 
     if (!empValidate2) {
         return res.status(402).json({message:"complete step 2"})
@@ -146,7 +144,7 @@ export const empForm3 = async (req, res) => {
  
 
 
-    await prisma.employeeStep3.create({
+    await prisma.employeeStatutory.create({
         data: body,
     })
         .then((emp) => {
@@ -156,31 +154,11 @@ export const empForm3 = async (req, res) => {
             res.status(400).json(error)
         })
 }
-export const lastStep = async (req, res) => {
+export const empPayment = async (req, res) => {
     const body = req.body;
-    const empStep1 = await prisma.employeeStep1.findFirst({where:{empNo:body.empNo}})
-    const empStep2 = await prisma.employeeStep2.findFirst({where:{empNo:body.empNo}})
-    const empStep3 = await prisma.employeeStep3.findFirst({where:{empNo:body.empNo}})
-
-    delete empStep1.id;
-    delete empStep1.createdAt;
-    delete empStep1.updatedAt;
-    delete empStep2.id;
-    delete empStep2.createdAt;
-    delete empStep2.updatedAt;
-    delete empStep3.id;
-    delete empStep3.createdAt;
-    delete empStep3.updatedAt;
-
-    const payload = {
-        ...empStep1,
-        ...empStep2,
-        ...empStep3,
-    }
-    console.log(payload);
     
     await prisma.employee.create({
-        data: payload,
+        data: body,
     })
         .then((emp) => {
             return res.status(201).json(emp)

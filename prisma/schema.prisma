@@ -30,7 +30,7 @@ model Whitelist {
 model Designation {
   id        Int      @id @default(autoincrement())
   name      String
-  employees Employee[] @relation("EmployeeDesignation")
+  employees EmployeePosition[] @relation("EmployeeDesignation")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -38,7 +38,7 @@ model Designation {
 model Location {
   id        Int      @id @default(autoincrement())
   name      String
-  employees Employee[] @relation("EmployeeLocation")
+  employees EmployeePosition[] @relation("EmployeeLocation")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -46,7 +46,7 @@ model Location {
 model Department {
   id        Int      @id @default(autoincrement())
   name      String
-  employees Employee[] @relation("EmployeeDepartment")
+  employees EmployeePosition[] @relation("EmployeeDepartment")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -55,7 +55,7 @@ model Department {
 model Division {
   id        Int      @id @default(autoincrement())
   name      String
-  employees Employee[] @relation("EmployeeDivision")
+  employees EmployeePosition[] @relation("EmployeeDivision")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,7 +63,7 @@ model Division {
 model ReportingManager {
   id        Int      @id @default(autoincrement())
   name      String
-  employees Employee[] @relation("EmployeeReportingManager")
+  employees EmployeeBasicInfo[] @relation("EmployeeReportingManager")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -71,20 +71,23 @@ model ReportingManager {
 model Project {
   id          Int      @id @default(autoincrement())
   name        String
-  employees   Employee[] @relation("EmployeeProject")
+  employees   EmployeePosition[] @relation("EmployeeProject")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Employee {
+
+model EmployeeBasicInfo {
   id                  Int      @id @default(autoincrement())
 
+  empNo               String @unique
+
   probationPeriod     String
-  empNo               String
   confirmDate         String?
-  name                String
-  email               String 
+  fname               String
+  lname               String
+  email               String
   dob                 String?
   mobileNo            String
   aadharNo            String
@@ -97,6 +100,16 @@ model Employee {
   status              String
   spouseName          String?
   doj                 String?
+
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model EmployeePosition {
+  id                  Int      @id @default(autoincrement())
+  empNo               String  @unique
+
   grade               String
   costCenter          String
   designation         Designation? @relation("EmployeeDesignation", fields: [designationId], references: [id])
@@ -111,71 +124,34 @@ model Employee {
   project             Project?    @relation("EmployeeProject", fields: [projectId], references: [id])
   projectId           Int?
   projectDate         String?
-  panNo               String
-  passportNo          String?
-  salary              Float?
-  isBillable          Boolean?    @default(false)
-  paymentType         String
-
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-}
-
-model EmployeeStep1 {
-  id                  Int      @id @default(autoincrement())
-
-  probationPeriod     String
-  empNo               String
-  confirmDate         String?
-  name                String
-  email               String
-  dob                 String?
-  mobileNo            String
-  aadharNo            String
-  emergencyName       String
-  gender              String
-  emergencyNo         String
-  reportingMgId       Int?
-  fathersName         String?
-  status              String
-  spouseName          String?
-  doj                 String?
-
-  // employeeStep2       EmployeeStep2?
-
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-}
-
-model EmployeeStep2 {
-  id                  Int      @id @default(autoincrement())
-  empNo               String
-
-  grade               String
-  costCenter          String
-  designationId       Int?
-  locationId          Int?
-  divisionId          Int?
-  departmentId        Int?
-  shift               String
-  projectId           Int?
-  projectDate         String?
-
-  // employeeStep1       EmployeeStep1 
-  // employeeStep3       EmployeeStep3?
 
 
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
 
-model EmployeeStep3 {
+model EmployeeStatutory {
   id                  Int      @id @default(autoincrement())
-  empNo               String
+  empNo               String   @unique
 
   panNo               String
   aadharNo            String
   passportNo          String
+  uanNo               String
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+model EmployeePayment {
+  id                  Int      @id @default(autoincrement())
+  empNo               String    @unique
+
+  paymentType               String
+  bankName                 String
+  accountNumber             String
+  accHolderName             String
+  ifscCode                 String
+  branchName                String  
 
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
